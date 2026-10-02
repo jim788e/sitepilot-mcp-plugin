@@ -2,7 +2,7 @@
 
 SitePilot supports the complete guarded Enfold workflow: inspect, calibrate, compile or stage a draft, validate it with Enfold’s native save pipeline, collect visual evidence, publish only through a separate approved change set, and roll back.
 
-This guide describes behavior shipped through SitePilot MCP `0.4.13` and Enfold 7.x. The live acceptance environment uses Enfold 7.1.6. SitePilot verifies the active theme and builder APIs on every site rather than assuming a theme version is compatible.
+This guide describes behavior shipped through SitePilot MCP `0.4.14` and Enfold 7.x. The live acceptance environment uses Enfold 7.1.6. SitePilot verifies the active theme and builder APIs on every site rather than assuming a theme version is compatible.
 
 ## What SitePilot supports
 

@@ -1,6 +1,6 @@
 # SitePilot MCP Security Model & Threat Assessment
 
-This document specifies the security architecture, cryptographic invariants, trust boundaries, and threat mitigation models for **SitePilot MCP** (`0.4.13`).
+This document specifies the security architecture, cryptographic invariants, trust boundaries, and threat mitigation models for **SitePilot MCP** (`0.4.14`).
 
 ---
 

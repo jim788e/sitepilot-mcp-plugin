@@ -2,7 +2,7 @@
 
 SitePilot MCP is a guarded control plane for a single WordPress site. It lets an OAuth-connected MCP client inspect the site, propose a change, wait for the required approval, execute it, verify the result, and roll it back when a recovery operation exists.
 
-This guide describes the current self-hosted plugin (`0.4.13`). It does not grant an agent arbitrary server access: PHP, SQL, shell, WP-CLI, server secrets, direct database changes, and WordPress-root deletion are deliberately unavailable.
+This guide describes the current self-hosted plugin (`0.4.14`). It does not grant an agent arbitrary server access: PHP, SQL, shell, WP-CLI, server secrets, direct database changes, and WordPress-root deletion are deliberately unavailable.
 
 ## 1. Before you install
 
@@ -179,7 +179,7 @@ The Agent accepts image and PDF attachments inline up to 20 MiB. HTML, CSS, Java
 
 For the complete Enfold capability matrix, compiler modes, optional edit-verification flow, and error guide, see the dedicated [Enfold Advanced Layout Builder guide](./enfold.md).
 
-SitePilot deliberately does not guess or copy private Enfold metadata. Complete this after installing `0.4.13`, and again after changing the Enfold parent/child theme or Enfold version. SitePilot loads Enfold's native builder framework after theme setup, uses the public builder instance APIs introduced by current Enfold releases, completes late initialization when the first REST or MCP request runs after WordPress `init`, and runs Enfold's normal ALB normalization and metadata save stages for each staged draft.
+SitePilot deliberately does not guess or copy private Enfold metadata. Complete this after installing `0.4.14`, and again after changing the Enfold parent/child theme or Enfold version. SitePilot loads Enfold's native builder framework after theme setup, uses the public builder instance APIs introduced by current Enfold releases, completes late initialization when the first REST or MCP request runs after WordPress `init`, and runs Enfold's normal ALB normalization and metadata save stages for each staged draft.
 
 After Enfold normalizes the clean data, SitePilot calls Enfold's own `ShortcodeHelper::build_shortcode_tree()` for that page's normalized content and persists the result before verification. This retains nested composite elements such as individual `av_toggle` accordion items without copying calibration metadata or constructing serialized trees itself.
 

@@ -4,7 +4,7 @@ Tags: mcp, oauth, automation, ai, approvals
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 0.4.13
+Stable tag: 0.4.14
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,6 +17,8 @@ SitePilot MCP exposes guarded operations through the WordPress Abilities API and
 Mutations require idempotency keys and an inspected site version. Publishing, settings, commerce, extension, user, and security operations are risk classified. Higher-risk operations require a fresh, hash-bound approval that expires after 30 minutes.
 
 The optional SitePilot Cloud service adds a multi-site MCP gateway, retained chat, encrypted BYO OpenAI configuration, artifact validation, and visual QA. It is disabled until an administrator explicitly opts in. The plugin never accepts or stores a WordPress password.
+
+Source code, documentation and support: the plugin source is public at https://github.com/jim788e/sitepilot-mcp-plugin, the documentation is at https://docs.sitepilot.tools/, and the product site is https://sitepilot.tools/. Report security issues privately to security@sitepilot.tools.
 
 == Installation ==
 
@@ -67,6 +69,9 @@ Upgrading adds the read-only ceiling to existing dynamic client registration rec
 The optional updater verifies a strict Ed25519-signed manifest and then verifies the downloaded ZIP SHA-256 before WordPress can install it. The channel is disabled unless its HTTPS manifest URL and public key are explicitly configured.
 
 == Changelog ==
+
+= 0.4.14 =
+* Link the public source repository, documentation and security contact from the plugin description.
 
 = 0.4.13 =
 * Point the Plugin URI at sitepilot.tools and add an Author URI.

@@ -9,7 +9,7 @@ Guarded OAuth 2.1 and Model Context Protocol (MCP) operations for WordPress. Sit
 
 ## What this repository is
 
-This is the public source of the plugin as released. Development and the full test suite live in a private repository, and each release is published here as a single commit with a matching tag. The files in the repository root are the plugin: the folder you would put in `wp-content/plugins/sitepilot-mcp`.
+This is the public source of the plugin as released. Development and the full test suite live in a private repository. Each release is published here automatically as a single commit with a matching tag, so the history is one commit per version. Pull requests and issues are welcome, but a pull request is not merged here directly: accepted changes are applied in the private repository and appear in the next release. The files in the repository root are the plugin: the folder you would put in `wp-content/plugins/sitepilot-mcp`.
 
 The `vendor/` directory is not committed. Run `composer install --no-dev` to produce it, or use the release ZIP, which already contains it.
 
