@@ -1,6 +1,6 @@
 # SitePilot MCP Security Model & Threat Assessment
 
-This document specifies the security architecture, cryptographic invariants, trust boundaries, and threat mitigation models for **SitePilot MCP** (`0.4.14`).
+This document specifies the security architecture, cryptographic invariants, trust boundaries, and threat mitigation models for **SitePilot MCP** (`0.4.15`).
 
 ---
 
@@ -48,6 +48,7 @@ The WordPress plugin is the **sole authoritative Policy Enforcement Point (PEP)*
 - **OAuth Discovery and Dynamic Client Registration**:
   - An unauthenticated request to the canonical `/wp-json/sitepilot-mcp/v2/mcp` resource returns a `WWW-Authenticate` challenge naming its RFC 9728 protected-resource metadata. The metadata points clients to the authorization server and its RFC 7591 Dynamic Client Registration endpoint.
   - An RFC 7591 Dynamic Client Registration that omits `scope` receives a `site:read` registered ceiling. An explicit registration scope must be a non-empty, supported, space-separated set; SitePilot persists and returns that exact ceiling.
+  - Registration is public, so it is bounded: at most 30 new registrations per hour for the whole site (HTTP 429 with `Retry-After` beyond that), at most five redirect URIs of at most 512 characters each, and a client name of at most 100 characters. The count and the insert run under a MySQL/MariaDB named lock, which cannot expire while its holder runs, so parallel requests cannot exceed the cap. If the database does not grant the lock, or the hourly count fails, registration is refused with HTTP 503 rather than run unchecked. The daily retention job deletes registered clients older than 30 days that never produced a grant or an authorization code.
   - Before consent and token issue, SitePilot intersects an authorization request with the dynamic client's registered ceiling. A request with no permitted scope fails with `invalid_scope`; consent never widens the registration.
   - Client ID Metadata Document clients remain outside this DCR-specific ceiling because their metadata is retrieved rather than stored as a dynamic registration. Their requested scopes, the WordPress user's grant authority, and the consent screen remain authoritative.
   - Existing dynamic client rows acquire the `site:read` ceiling during the `0.4.10` schema upgrade for future authorization requests, but the migration does not narrow already-issued access or refresh tokens. Those grants retain their consented scopes until expiry or revocation.

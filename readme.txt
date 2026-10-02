@@ -4,13 +4,15 @@ Tags: mcp, oauth, automation, ai, approvals
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 0.4.14
+Stable tag: 0.4.15
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Guarded OAuth and MCP operations for WordPress with dry-run change sets, approvals, audit history, and rollback.
 
 == Description ==
+
+Beta: working and security-audited, but young. Feedback is welcome at https://github.com/jim788e/sitepilot-mcp-plugin/issues.
 
 SitePilot MCP exposes guarded operations through the WordPress Abilities API and the official WordPress MCP Adapter. Direct MCP remains self-hosted and works without SitePilot Cloud.
 
@@ -70,18 +72,22 @@ The optional updater verifies a strict Ed25519-signed manifest and then verifies
 
 == Changelog ==
 
+= 0.4.15 =
+* Rate limit public OAuth client registration to 30 per hour, bound the redirect URI count and length and the client name, and remove registered clients that never produced a grant or code after 30 days.
+* Mark the plugin as beta in the description.
+
 = 0.4.14 =
 * Link the public source repository, documentation and security contact from the plugin description.
 
 = 0.4.13 =
 * Point the Plugin URI at sitepilot.tools and add an Author URI.
 * Unslash and sanitize remaining request values in the admin handlers, escape two table names, and run uninstall in a prefixed function, resolving the genuine Plugin Check warnings.
-* Include composer.json in the WordPress.org package and keep the private updater out of it.
+* Include composer.json in the WordPress.org package.
 
 = 0.4.12 =
 * Protect the artifact staging directory with an index file and an access deny, including on existing installations after an upgrade.
 * Unslash `REQUEST_URI` and `HTTP_AUTHORIZATION` before use and document the Enfold normalized-data handling flagged by Plugin Check.
-* Add a WordPress.org package variant without the private updater.
+* Add a WordPress.org package variant.
 
 = 0.4.11 =
 * Add a Connect tab to the SitePilot admin screen with the site MCP endpoint and paste-ready setup for Claude, Claude Code, Cursor, and a read-only terminal fallback.

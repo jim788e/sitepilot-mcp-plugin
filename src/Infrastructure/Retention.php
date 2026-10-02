@@ -38,6 +38,16 @@ final class Retention {
 				$grant_cutoff
 			)
 		);
+		// Registration is public, so clients that never produced a grant or code are dropped after a month.
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE clients FROM {$wpdb->prefix}sitepilot_oauth_clients clients
+				WHERE clients.created_at < %s
+				AND NOT EXISTS ( SELECT 1 FROM {$wpdb->prefix}sitepilot_oauth_grants grants WHERE grants.client_id = clients.client_id )
+				AND NOT EXISTS ( SELECT 1 FROM {$wpdb->prefix}sitepilot_oauth_codes codes WHERE codes.client_id = clients.client_id )",
+				$grant_cutoff
+			)
+		);
 	}
 
 	/** @param array<string,mixed> $erasers @return array<string,mixed> */

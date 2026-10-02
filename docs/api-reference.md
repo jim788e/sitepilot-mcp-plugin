@@ -1,7 +1,7 @@
 # SitePilot MCP API & Tool Reference
 
 > **Definitive Technical Reference for Model Context Protocol (MCP), REST Endpoints, and Guarded WordPress Operations**  
-> **Specification Version**: `1.0.0` | **Plugin Version**: `0.4.14`
+> **Specification Version**: `1.0.0` | **Plugin Version**: `0.4.15`
 
 ---
 

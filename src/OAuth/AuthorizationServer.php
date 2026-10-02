@@ -11,6 +11,13 @@ final class AuthorizationServer {
 	private const LATEST_MCP_RESOURCE_VERSION = 'v2';
 	private const MCP_RESOURCE_VERSIONS       = array( 'v1', 'v2' );
 
+	// Dynamic Client Registration is public by design (RFC 7591), so it is rate limited and bounded.
+	private const REGISTRATION_LIMIT_PER_HOUR    = 30;
+	private const REGISTRATION_MAX_REDIRECT_URIS = 5;
+	private const REGISTRATION_MAX_URI_LENGTH    = 512;
+	private const REGISTRATION_MAX_NAME_LENGTH   = 100;
+	private const REGISTRATION_LOCK_WAIT         = 2;
+
 	private TokenRepository $tokens;
 
 	public function __construct() {
@@ -156,10 +163,18 @@ final class AuthorizationServer {
 	}
 
 	public function register_client( \WP_REST_Request $request ): \WP_REST_Response {
-		global $wpdb;
 		$redirects = $request->get_param( 'redirect_uris' );
 		if ( ! is_array( $redirects ) || array() === $redirects ) {
 			return $this->oauth_error( 'invalid_client_metadata', 'redirect_uris is required.' );
+		}
+		// Registration is public, so every stored field is bounded.
+		if ( count( $redirects ) > self::REGISTRATION_MAX_REDIRECT_URIS ) {
+			return $this->oauth_error( 'invalid_client_metadata', 'At most ' . self::REGISTRATION_MAX_REDIRECT_URIS . ' redirect URIs can be registered.' );
+		}
+		foreach ( $redirects as $uri ) {
+			if ( ! is_string( $uri ) || strlen( $uri ) > self::REGISTRATION_MAX_URI_LENGTH ) {
+				return $this->oauth_error( 'invalid_redirect_uri', 'Each redirect URI must be a string of at most ' . self::REGISTRATION_MAX_URI_LENGTH . ' characters.' );
+			}
 		}
 		$redirects = array_values( array_unique( array_map( 'esc_url_raw', $redirects ) ) );
 		foreach ( $redirects as $uri ) {
@@ -167,8 +182,9 @@ final class AuthorizationServer {
 				return $this->oauth_error( 'invalid_redirect_uri', 'Redirect URIs must be exact HTTPS or loopback URLs without fragments.' );
 			}
 		}
-		$method = (string) ( $request->get_param( 'token_endpoint_auth_method' ) ? $request->get_param( 'token_endpoint_auth_method' ) : 'none' );
-		if ( ! in_array( $method, array( 'none', 'client_secret_post' ), true ) ) {
+		$method = $request->get_param( 'token_endpoint_auth_method' );
+		$method = ( null === $method || '' === $method ) ? 'none' : $method;
+		if ( ! is_string( $method ) || ! in_array( $method, array( 'none', 'client_secret_post' ), true ) ) {
 			return $this->oauth_error( 'invalid_client_metadata', 'Unsupported token endpoint authentication method.' );
 		}
 		$scope_value = $request->get_param( 'scope' );
@@ -183,21 +199,40 @@ final class AuthorizationServer {
 			}
 		}
 		$registered_scope = implode( ' ', $scopes );
-		$client_id        = Ids::token( 24 );
-		$client_secret    = 'client_secret_post' === $method ? Ids::token( 32 ) : null;
-		$inserted         = $wpdb->insert(
-			$wpdb->prefix . 'sitepilot_oauth_clients',
+		$client_name      = $request->get_param( 'client_name' );
+		if ( is_string( $client_name ) ) {
+			$client_name = sanitize_text_field( $client_name );
+			$client_name = function_exists( 'mb_substr' ) ? mb_substr( $client_name, 0, self::REGISTRATION_MAX_NAME_LENGTH ) : substr( $client_name, 0, self::REGISTRATION_MAX_NAME_LENGTH );
+			// Without mbstring the cut can split a multibyte character; drop the broken tail instead of failing the insert.
+			$client_name = wp_check_invalid_utf8( $client_name, true );
+		} else {
+			$client_name = '';
+		}
+		if ( '' === $client_name ) {
+			$client_name = 'MCP client';
+		}
+		$client_id     = Ids::token( 24 );
+		$client_secret = 'client_secret_post' === $method ? Ids::token( 32 ) : null;
+		// Checked after validation, so malformed requests never count and nothing is written for them.
+		$stored = $this->store_client_within_limit(
 			array(
 				'client_id'          => $client_id,
-				'client_name'        => sanitize_text_field( (string) ( $request->get_param( 'client_name' ) ? $request->get_param( 'client_name' ) : 'MCP client' ) ),
+				'client_name'        => $client_name,
 				'redirect_uris'      => wp_json_encode( $redirects ),
 				'scopes'             => $registered_scope,
 				'client_secret_hash' => $client_secret ? Ids::hash( $client_secret ) : null,
 				'created_at'         => current_time( 'mysql', true ),
-			),
-			array( '%s', '%s', '%s', '%s', '%s', '%s' )
+			)
 		);
-		if ( false === $inserted ) {
+		if ( 'limited' === $stored ) {
+			$limited = $this->oauth_error( 'temporarily_unavailable', 'Too many client registrations. Try again later.', 429 );
+			$limited->header( 'Retry-After', (string) HOUR_IN_SECONDS );
+			return $limited;
+		}
+		if ( 'unavailable' === $stored ) {
+			return $this->oauth_error( 'temporarily_unavailable', 'Client registration needs a MySQL or MariaDB named lock, which the database did not grant. Try again later.', 503 );
+		}
+		if ( 'stored' !== $stored ) {
 			return $this->oauth_error( 'server_error', 'The client registration could not be stored safely.', 500 );
 		}
 		( new AuditLog() )->record(
@@ -606,6 +641,56 @@ final class AuthorizationServer {
 	private function redirect_oauth( string $uri, array $params ): never {
 		wp_redirect( add_query_arg( array_filter( $params ), $uri ), 302, 'SitePilot MCP' ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- exact registered URI was validated.
 		exit;
+	}
+
+	/**
+	 * Count and insert under one lock, so a burst of parallel requests cannot all pass the check before any row exists.
+	 *
+	 * @param array<string,mixed> $row Client row to insert.
+	 * @return string 'stored', 'limited' (cap reached or lock busy), 'unavailable' (no lock) or 'failed'.
+	 */
+	private function store_client_within_limit( array $row ): string {
+		global $wpdb;
+		$lock = self::registration_lock_name();
+
+		// A MySQL/MariaDB named lock belongs to this connection: it cannot expire while the holder is still running,
+		// and the server releases it if the request dies. '1' = acquired, '0' = busy, NULL = error or no named locks.
+		$suppress = $wpdb->suppress_errors( true );
+		$acquired = (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK( %s, %d )', $lock, self::REGISTRATION_LOCK_WAIT ) );
+		$wpdb->suppress_errors( $suppress );
+		if ( '0' === $acquired ) {
+			return 'limited';
+		}
+		// Fail closed: without the lock the cap could not be enforced, so nothing is written.
+		if ( '1' !== $acquired ) {
+			return 'unavailable';
+		}
+		try {
+			$since = gmdate( 'Y-m-d H:i:s', time() - HOUR_IN_SECONDS );
+			$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}sitepilot_oauth_clients WHERE created_at > %s", $since ) );
+			// A failed count is NULL, not zero: refuse instead of writing past the cap.
+			if ( null === $count ) {
+				return 'unavailable';
+			}
+			if ( (int) $count >= self::REGISTRATION_LIMIT_PER_HOUR ) {
+				return 'limited';
+			}
+			$inserted = $wpdb->insert( $wpdb->prefix . 'sitepilot_oauth_clients', $row, array( '%s', '%s', '%s', '%s', '%s', '%s' ) );
+			return false === $inserted ? 'failed' : 'stored';
+		} finally {
+			$wpdb->query( $wpdb->prepare( 'SELECT RELEASE_LOCK( %s )', $lock ) );
+		}
+	}
+
+	/**
+	 * Named database lock that serialises client registration for this site. Lock names are server-wide, so the site
+	 * URL and table prefix are part of it.
+	 *
+	 * @internal Public for the wp-env OAuth scenario.
+	 */
+	public static function registration_lock_name(): string {
+		global $wpdb;
+		return 'sitepilot_oauth_register_' . md5( home_url( '/' ) . '|' . $wpdb->prefix );
 	}
 
 	private function oauth_error( string $code, string $description, int $status = 400 ): \WP_REST_Response {

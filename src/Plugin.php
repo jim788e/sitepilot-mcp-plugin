@@ -13,6 +13,7 @@ use SitePilot\Mcp\Adapters\EnfoldTemplateStore;
 use SitePilot\Mcp\Credentials\ApplicationPasswordAuthenticator;
 use SitePilot\Mcp\Credentials\CredentialController;
 use SitePilot\Mcp\Infrastructure\Environment;
+// direct-channel-updater import
 use SitePilot\Mcp\Infrastructure\PrivateUpdater;
 use SitePilot\Mcp\Infrastructure\Retention;
 use SitePilot\Mcp\OAuth\AuthorizationServer;
@@ -52,9 +53,11 @@ final class Plugin {
 		( new Admin() )->register();
 		( new AgencyPackPreview() )->register();
 		( new Retention() )->register();
+		// direct-channel-updater:begin (removed from the WordPress.org package by scripts/package-plugin.mjs)
 		if ( class_exists( PrivateUpdater::class ) ) {
 			( new PrivateUpdater() )->register();
 		}
+		// direct-channel-updater:end
 
 		add_action( 'mcp_adapter_init', array( $this, 'register_mcp_server' ) );
 		if ( class_exists( '\\WP\\MCP\\Core\\McpAdapter' ) ) {

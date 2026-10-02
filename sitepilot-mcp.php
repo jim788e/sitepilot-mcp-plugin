@@ -3,7 +3,7 @@
  * Plugin Name: SitePilot MCP
  * Plugin URI: https://sitepilot.tools/
  * Description: A guarded OAuth and MCP control plane for WordPress sites.
- * Version: 0.4.14
+ * Version: 0.4.15
  * Requires at least: 6.9
  * Requires PHP: 8.2
  * Author: SitePilot
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SITEPILOT_MCP_VERSION', '0.4.14' );
+define( 'SITEPILOT_MCP_VERSION', '0.4.15' );
 define( 'SITEPILOT_MCP_FILE', __FILE__ );
 define( 'SITEPILOT_MCP_DIR', plugin_dir_path( __FILE__ ) );
 
