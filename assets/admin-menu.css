@@ -1,0 +1,22 @@
+#adminmenu .toplevel_page_sitepilot-mcp .wp-menu-image img {
+  display: none;
+}
+
+#adminmenu .toplevel_page_sitepilot-mcp .wp-menu-image::before {
+  width: 20px;
+  height: 20px;
+  margin: 7px 0 0 7px;
+  padding: 0;
+  background-color: currentColor;
+  content: "";
+  -webkit-mask: url("sitepilot-mark.svg") center / contain no-repeat;
+  mask: url("sitepilot-mark.svg") center / contain no-repeat;
+}
+
+@media (max-width: 782px) {
+  #adminmenu .toplevel_page_sitepilot-mcp .wp-menu-image::before {
+    width: 26px;
+    height: 26px;
+    margin: 8px 0 0 8px;
+  }
+}

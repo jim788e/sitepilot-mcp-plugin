@@ -1,0 +1,107 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: SitePilot MCP 0.1.0\n"
+"Language: el_GR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "SitePilot MCP"
+msgstr "SitePilot MCP"
+
+msgid "Status"
+msgstr "Κατάσταση"
+
+msgid "Connections"
+msgstr "Συνδέσεις"
+
+msgid "Permissions"
+msgstr "Δικαιώματα"
+
+msgid "Approvals"
+msgstr "Εγκρίσεις"
+
+msgid "Change History"
+msgstr "Ιστορικό αλλαγών"
+
+msgid "Security"
+msgstr "Ασφάλεια"
+
+msgid "Diagnostics"
+msgstr "Διαγνωστικά"
+
+msgid "Pending approvals"
+msgstr "Εκκρεμείς εγκρίσεις"
+
+msgid "Approve for 30 minutes"
+msgstr "Έγκριση για 30 λεπτά"
+
+msgid "OAuth connections"
+msgstr "Συνδέσεις OAuth"
+
+msgid "Revoke"
+msgstr "Ανάκληση"
+
+msgid "Active"
+msgstr "Ενεργή"
+
+msgid "Revoked"
+msgstr "Ανακληθείσα"
+
+msgid "Security controls"
+msgstr "Έλεγχοι ασφάλειας"
+
+msgid "Save security settings"
+msgstr "Αποθήκευση ρυθμίσεων ασφάλειας"
+
+msgid "All environment checks passed."
+msgstr "Όλοι οι έλεγχοι περιβάλλοντος ολοκληρώθηκαν επιτυχώς."
+
+msgid "Administrators only"
+msgstr "Μόνο διαχειριστές"
+
+msgid "Administrators and SitePilot Operators"
+msgstr "Διαχειριστές και χειριστές SitePilot"
+
+msgid "SitePilot Operator"
+msgstr "Χειριστής SitePilot"
+
+msgid "Authorize SitePilot connection"
+msgstr "Εξουσιοδότηση σύνδεσης SitePilot"
+
+msgid "Authorize"
+msgstr "Εξουσιοδότηση"
+
+msgid "Deny"
+msgstr "Απόρριψη"
+
+msgid "No outbound cloud request is made before this explicit opt-in."
+msgstr "Δεν πραγματοποιείται κανένα εξερχόμενο αίτημα προς το cloud πριν από αυτή τη ρητή συγκατάθεση."
+
+msgid "Enable permanent content deletion"
+msgstr "Ενεργοποίηση οριστικής διαγραφής περιεχομένου"
+
+msgid "Danger: this permits single-item Tier-3 deletion after a fresh administrator approval. It cannot be rolled back. Leave disabled and use the WordPress trash workflow for normal deletion."
+msgstr "Κίνδυνος: επιτρέπει τη διαγραφή ενός στοιχείου Επιπέδου 3 μετά από νέα έγκριση διαχειριστή. Δεν είναι δυνατή η επαναφορά. Αφήστε την απενεργοποιημένη και χρησιμοποιήστε τον κάδο του WordPress για κανονικές διαγραφές."
+
+msgid "Content deletion requires a numeric post ID."
+msgstr "Η διαγραφή περιεχομένου απαιτεί αριθμητικό αναγνωριστικό άρθρου."
+
+msgid "Permanent deletion is disabled. An administrator must enable it in SitePilot Security."
+msgstr "Η οριστική διαγραφή είναι απενεργοποιημένη. Ένας διαχειριστής πρέπει να την ενεργοποιήσει στην ενότητα Ασφάλεια του SitePilot."
+
+msgid "The connected WordPress user cannot delete this post."
+msgstr "Ο συνδεδεμένος χρήστης του WordPress δεν μπορεί να διαγράψει αυτό το άρθρο."
+
+msgid "The target post is already in the trash."
+msgstr "Το άρθρο προορισμού βρίσκεται ήδη στον κάδο."
+
+msgid "WordPress could not move the post to the trash."
+msgstr "Το WordPress δεν μπόρεσε να μεταφέρει το άρθρο στον κάδο."
+
+msgid "WordPress could not permanently delete the post."
+msgstr "Το WordPress δεν μπόρεσε να διαγράψει οριστικά το άρθρο."
+
+msgid "This irreversible change set has no rollback operation."
+msgstr "Αυτό το μη αναστρέψιμο σύνολο αλλαγών δεν διαθέτει λειτουργία επαναφοράς."
