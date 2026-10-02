@@ -4,7 +4,7 @@ Tags: mcp, oauth, automation, ai, approvals
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 0.4.15
+Stable tag: 0.4.16
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -71,6 +71,10 @@ Upgrading adds the read-only ceiling to existing dynamic client registration rec
 The optional updater verifies a strict Ed25519-signed manifest and then verifies the downloaded ZIP SHA-256 before WordPress can install it. The channel is disabled unless its HTTPS manifest URL and public key are explicitly configured.
 
 == Changelog ==
+
+= 0.4.16 =
+* Remove the Author URI from the plugin header, because WordPress.org requires it to differ from the Plugin URI.
+* Reword the oldest changelog entry.
 
 = 0.4.15 =
 * Rate limit public OAuth client registration to 30 per hour, bound the redirect URI count and length and the client name, and remove registered clients that never produced a grant or code after 30 days.
@@ -314,4 +318,4 @@ The optional updater verifies a strict Ed25519-signed manifest and then verifies
 * Use stable database-backed post metadata for the optimistic site version, allowing inspection and planning to run safely in separate API requests without a persistent object cache.
 
 = 0.1.0 =
-* Private-beta foundation with OAuth, seven MCP abilities, risk-based change sets, approvals, audit, rollback, adapters, optional cloud gateway, and fail-closed signed updates.
+* Private-beta foundation with OAuth, seven MCP abilities, risk-based change sets, approvals, audit, rollback, adapters, and an optional cloud gateway.

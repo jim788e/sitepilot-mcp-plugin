@@ -2,7 +2,7 @@
 
 SitePilot supports a guarded Elementor workflow with an explicit generation boundary: classic documents can be constructed and structurally edited; mixed Elementor 3/4 documents can be inspected without failing the whole page; existing atomic regions permit updates only to existing, type-preserving settings. SitePilot does not construct atomic elements or write Elementor 4 atomic Global Classes or Variables.
 
-This guide describes behavior shipped through SitePilot MCP `0.4.15` and Elementor 3.20+. The verification environment pins Elementor 4.2.1. SitePilot checks Elementor's own APIs on every site rather than assuming a version is compatible.
+This guide describes behavior shipped through SitePilot MCP `0.4.16` and Elementor 3.20+. The verification environment pins Elementor 4.2.1. SitePilot checks Elementor's own APIs on every site rather than assuming a version is compatible.
 
 ## What SitePilot supports
 
